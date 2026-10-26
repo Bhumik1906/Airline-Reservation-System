@@ -1,220 +1,674 @@
-# SkyBook Airlines - Airline Reservation System ✈️
+# SkyBook Airlines — Complete Airline Reservation System
 
-A clean, modern, beginner-friendly, and fully functional **Airline Reservation System** website designed for a college **Software Engineering (SE) Lab Mini-Project**.
+## Project Overview
 
----
+Build a complete, functional, beginner-friendly full-stack web application named **SkyBook Airlines**, an Airline Reservation System designed for a college Software Engineering (SE) Lab Mini-Project.
 
-## 📌 1. Project Overview
+The application must look like a professional airline booking website, with a clean blue-and-white visual theme, modern layouts, responsive pages, interactive components, and a simple user experience.
 
-**SkyBook Airlines** is a complete full-stack web application that allows passengers to search for domestic Indian flights, select seats interactively from a visual cabin layout, generate instant booking references (PNR), view and print electronic boarding passes, and cancel bookings. It also includes an administrative dashboard for airline operators to manage flight schedules, view system statistics, and monitor bookings.
+**Important:** Build the actual working application, not a prototype, static mockup, project description, or collection of disconnected HTML pages. Every major button, form, navigation link, and user workflow must work correctly.
 
-### Key Highlights
-- **Architecture**: Model-Template-View / MVC pattern using Python Flask and SQLite3.
-- **Visual Cabin Seat Selection**: 60-seat interactive aircraft grid (A320 layout) where booked seats are locked to prevent duplicate bookings.
-- **Security**: Password hashing with Werkzeug, parameterized SQL queries preventing SQL injection, and session-based role authorization (`user` vs `admin`).
-- **Zero Complex Tooling**: Pure HTML, CSS, JavaScript, Bootstrap 5, Python Flask, and SQLite. No React, Node.js, or complex setups required.
+## 1. Technology Stack
 
----
+Use only the following technologies:
 
-## 🛠️ 2. Technology Stack
+- **Frontend:** HTML5, CSS3, JavaScript (ES6)
+- **CSS Framework:** Bootstrap 5.3
+- **Icons:** Bootstrap Icons
+- **Backend:** Python Flask 3.x
+- **Database:** SQLite3
+- **Templating:** Jinja2
+- **Authentication:** Flask sessions and Werkzeug password hashing
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| **Frontend** | HTML5, CSS3, JavaScript (ES6) | Responsive UI, client-side validation, seat selection |
-| **Styling** | Bootstrap 5.3 + Custom CSS | Clean blue and white airline aesthetic, mobile responsiveness |
-| **Icons** | Bootstrap Icons | Airplane, user, and dashboard icons |
-| **Backend** | Python Flask (v3.x) | Routing, session control, business logic, templating |
-| **Database** | SQLite3 | Local relational storage with foreign key constraints |
-| **Security** | Werkzeug Security | PBKDF2/SHA-256 password hashing & validation |
+Do not use React, Next.js, Node.js, TypeScript, MongoDB, or any unnecessary frameworks.
 
----
+The project must be straightforward to install and run locally using Python and pip.
 
-## 📁 3. Project Structure
+## 2. Design and User Experience
+
+Create a polished, professional airline website inspired by modern flight-booking platforms.
+
+### Visual Direction
+
+- Primary colors: airline blue, white, and subtle light-gray backgrounds.
+- Use a consistent blue color palette with restrained accent colors.
+- Use clean typography, preferably Inter or a similar modern sans-serif font.
+- Include spacious layouts, rounded cards, subtle shadows, and consistent spacing.
+- Use Bootstrap Icons for navigation, flights, passengers, bookings, and administration.
+- Add subtle hover states, transitions, and loading or empty states where appropriate.
+- Ensure all pages are responsive across desktop, tablet, and mobile.
+- Maintain accessible labels, readable contrast, and clear validation messages.
+
+Avoid excessive gradients, unnecessary animations, cluttered layouts, and generic unstyled forms.
+
+### Shared Website Layout
+
+Create a reusable base template containing:
+
+- Responsive navigation bar
+- SkyBook Airlines branding and airplane icon
+- Navigation links appropriate to the current authentication state
+- Login, registration, or account actions
+- Flash-message notifications
+- Consistent page content area
+- Footer with basic airline information and navigation links
+
+The navigation must adapt according to whether the visitor is logged in as a customer or an administrator.
+
+## 3. Customer-Facing Features
+
+### A. Homepage
+
+Create an attractive homepage containing:
+
+- Hero section with an airline-themed headline and supporting text.
+- Flight search form.
+- Origin and destination selection.
+- Departure date selector.
+- Passenger count selector if supported by the booking workflow.
+- Search button.
+- Popular domestic Indian routes.
+- Featured flight offers or informational cards.
+- A brief explanation of the booking process.
+- Professional footer.
+
+Seed the application with realistic sample routes connecting cities such as Ahmedabad, Mumbai, Delhi, Bengaluru, Hyderabad, Chennai, Kolkata, and Goa.
+
+The homepage search form must submit real data to the Flask backend.
+
+### B. User Registration
+
+Implement a working registration system with:
+
+- Full name
+- Email address
+- Phone number
+- Password
+- Confirm password
+
+Requirements:
+
+- Validate all required fields on the client and server.
+- Validate email format and password requirements.
+- Prevent duplicate email registrations.
+- Store only password hashes, never plaintext passwords.
+- Show useful success and error messages.
+- Redirect successfully registered users to the appropriate page.
+
+### C. Login and Logout
+
+Create a clean login page with:
+
+- Email address
+- Password
+- Login button
+- Registration link
+- Demo Customer autofill button
+- Demo Administrator autofill button
+
+Authenticate users securely using Werkzeug password-hashing utilities.
+
+Use server-side sessions to maintain authentication state. Implement logout and ensure protected pages cannot be accessed after the session ends.
+
+Never expose password hashes in templates or API responses.
+
+### D. Flight Search
+
+Allow customers to search flights using:
+
+- Origin city
+- Destination city
+- Departure date
+
+Display matching flights as clean, informative cards.
+
+Each card should show:
+
+- Airline name and flight number
+- Origin and destination
+- Departure and arrival times
+- Flight duration
+- Travel date
+- Available seats
+- Ticket price
+- Select Seats / Book Flight button
+
+Include sorting by price, low to high, and high to low.
+
+Requirements:
+
+- Do not show flights where the origin and destination are identical.
+- Filter using the selected travel date.
+- Validate search inputs on the backend.
+- Display a useful empty state when no flights match.
+- Calculate availability from actual confirmed bookings rather than blindly trusting a counter.
+- Prevent booking flights that have already departed or are otherwise ineligible for travel.
+
+### E. Interactive Aircraft Seat Selection
+
+Build an interactive 60-seat aircraft layout inspired by an Airbus A320, using a 3-aisle-3 configuration: three seats on each side of the aisle.
+
+Use a layout such as:
+
+A B C | aisle | D E F
+
+Display 10 rows with six seats per row, numbered 1 through 10.
+
+Provide a legend for:
+
+- Available seats
+- Currently selected seat
+- Already booked seats
+
+Requirements:
+
+- Available seats must be clickable.
+- Selected seats must be visually distinct.
+- Confirmed booked seats must be disabled.
+- Display the selected seat number clearly.
+- Display the total fare before confirmation.
+- Refresh or validate seat availability before saving a booking.
+- If another user books the same seat first, reject the duplicate booking and display an appropriate message.
+- Do not allow a customer to submit a booking without selecting a seat.
+
+The backend must be the final authority for seat availability. Frontend JavaScript alone must never determine whether a seat can be booked.
+
+### F. Passenger Details and Booking Confirmation
+
+After selecting a seat, present a passenger details form containing:
+
+- Passenger full name
+- Age
+- Gender
+- Contact number
+
+Validate the fields and submit the booking to Flask.
+
+On successful booking:
+
+- Generate a unique six-character alphanumeric booking reference (PNR).
+- Save the passenger and flight information.
+- Record the selected seat.
+- Store the total fare.
+- Set the booking status to `Confirmed`.
+- Update or recalculate available seats correctly.
+- Show a confirmation message.
+- Redirect to the booking details or e-ticket page.
+
+Use a database transaction to ensure that booking creation and availability updates succeed together.
+
+Handle concurrent booking attempts safely. Add a database-level uniqueness safeguard for active reservations, where appropriate, and implement a reliable transaction strategy for SQLite.
+
+### G. My Bookings
+
+Create a dedicated customer dashboard at `/my-bookings`.
+
+Display the logged-in customer's bookings with:
+
+- PNR reference
+- Flight number
+- Airline
+- Route
+- Departure date and time
+- Passenger name
+- Seat number
+- Total fare
+- Booking status
+
+Provide actions to:
+
+- View E-Ticket
+- Print Ticket
+- Cancel Booking when eligible
+
+Customers must only be able to view and cancel their own bookings.
+
+Include appropriate empty states when the customer has no bookings.
+
+### H. E-Ticket and Boarding Pass
+
+Create a professional, printable boarding-pass-style ticket.
+
+Display:
+
+- SkyBook Airlines branding
+- Passenger name
+- PNR reference
+- Flight number
+- Origin and destination
+- Travel date
+- Departure and arrival times
+- Seat number
+- Passenger details
+- Total fare
+- Booking status
+- A visually styled barcode or PNR representation
+
+The ticket must be printable and support saving as PDF using the browser's print dialog.
+
+Use print-specific CSS to remove navigation, buttons, and unnecessary screen elements when printing.
+
+Do not represent a decorative barcode as a scannable barcode unless it is generated correctly. A simple styled PNR code is acceptable for this academic project.
+
+Cancelled bookings must clearly display their cancelled status.
+
+### I. Booking Cancellation
+
+Implement a working cancellation process.
+
+Before cancellation, show a confirmation dialog explaining which booking will be cancelled.
+
+When cancellation is confirmed:
+
+- Verify that the logged-in user owns the booking, unless the administrator is performing an authorized action.
+- Verify that the booking is currently confirmed.
+- Update its status to `Cancelled`.
+- Make the seat available for future reservations.
+- Keep the booking record for audit purposes.
+- Update availability consistently within a database transaction.
+- Prevent repeated cancellation from incrementing seat availability multiple times.
+
+Use appropriate flash messages and redirects.
+
+## 4. Administrator Dashboard
+
+Create a protected administration dashboard at `/admin`.
+
+Only authenticated users with the `admin` role may access administrative pages and actions.
+
+### A. Dashboard Statistics
+
+Display summary cards for:
+
+- Total flights
+- Total registered users
+- Confirmed bookings
+- Cancelled bookings
+- Total revenue from confirmed bookings
+
+Calculate statistics using real database queries.
+
+Cancelled bookings must not contribute to confirmed-booking revenue.
+
+### B. Flight Management
+
+Create a flight-management table showing:
+
+- Flight number
+- Airline
+- Origin
+- Destination
+- Travel date
+- Departure time
+- Arrival time
+- Total seats
+- Available seats
+- Fare
+
+Implement the following functions:
+
+1. Add a new flight.
+2. Edit flight details.
+3. Update departure and arrival times.
+4. Update fares.
+5. Delete eligible flights.
+
+The add/edit form must include all required flight fields and validate them on the server.
+
+Prevent duplicate flight numbers.
+
+Do not allow deletion of flights with confirmed bookings. Cancelled booking records should not be silently destroyed.
+
+If flight schedules are changed, ensure the departure and arrival times and dates remain consistent.
+
+### C. Booking Management
+
+Provide an administrative booking table showing:
+
+- PNR
+- Customer account
+- Passenger name
+- Flight
+- Seat
+- Fare
+- Booking date
+- Status
+
+Allow administrators to inspect bookings and cancel confirmed bookings when necessary.
+
+Use POST requests for state-changing operations and require appropriate authorization.
+
+### D. User Management
+
+Provide an administrator view of registered users, including:
+
+- User name
+- Email
+- Phone number
+- Account role
+- Registration date
+
+Do not display password hashes.
+
+Do not allow customers to access this information.
+
+## 5. Database Design
+
+Use SQLite3 with three primary relational tables.
+
+### Table 1: `users`
+
+Fields:
+
+- `id`: INTEGER PRIMARY KEY AUTOINCREMENT
+- `name`: TEXT NOT NULL
+- `email`: TEXT UNIQUE NOT NULL
+- `password_hash`: TEXT NOT NULL
+- `phone`: TEXT
+- `role`: TEXT NOT NULL DEFAULT 'user'
+- `created_at`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+Restrict roles to `user` and `admin`.
+
+### Table 2: `flights`
+
+Fields:
+
+- `id`: INTEGER PRIMARY KEY AUTOINCREMENT
+- `flight_number`: TEXT UNIQUE NOT NULL
+- `airline`: TEXT NOT NULL
+- `source`: TEXT NOT NULL
+- `destination`: TEXT NOT NULL
+- `departure_time`: TEXT NOT NULL
+- `arrival_time`: TEXT NOT NULL
+- `flight_date`: TEXT NOT NULL
+- `duration`: TEXT NOT NULL
+- `total_seats`: INTEGER NOT NULL DEFAULT 60
+- `price`: REAL NOT NULL
+
+Store travel dates in `YYYY-MM-DD` format.
+
+Use validated time values and consistent formatting. Ensure the total number of seats is positive and the fare is nonnegative.
+
+Calculate availability from confirmed bookings or maintain a synchronized availability field with transaction-safe updates. Do not allow the stored value to drift from the actual booking records.
+
+### Table 3: `bookings`
+
+Fields:
+
+- `id`: INTEGER PRIMARY KEY AUTOINCREMENT
+- `booking_reference`: TEXT UNIQUE NOT NULL
+- `user_id`: INTEGER NOT NULL
+- `flight_id`: INTEGER NOT NULL
+- `passenger_name`: TEXT NOT NULL
+- `passenger_age`: INTEGER NOT NULL
+- `passenger_gender`: TEXT NOT NULL
+- `contact_number`: TEXT NOT NULL
+- `seat_number`: TEXT NOT NULL
+- `booking_date`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+- `status`: TEXT NOT NULL DEFAULT 'Confirmed'
+- `total_fare`: REAL NOT NULL
+
+Add foreign-key constraints referencing `users.id` and `flights.id`.
+
+Restrict booking status to `Confirmed` and `Cancelled`.
+
+Add appropriate indexes to improve queries for confirmed bookings, flight availability, and user booking history.
+
+Ensure that two confirmed bookings cannot reserve the same seat on the same flight. Use an appropriate SQLite partial unique index or an equivalent transaction-safe database constraint.
+
+Enable foreign-key enforcement for every SQLite connection.
+
+## 6. Security Requirements
+
+Implement security appropriate for a college-level full-stack project.
+
+- Hash passwords with Werkzeug.
+- Use parameterized SQL queries throughout.
+- Never concatenate untrusted input into SQL statements.
+- Protect routes using authentication and role-based authorization.
+- Enforce ownership checks for individual bookings.
+- Validate all important input on the backend.
+- Use POST for operations that change database state.
+- Add CSRF protection for forms, including cancellation and administrative actions.
+- Use secure session settings and a configurable secret key.
+- Set `HttpOnly` and appropriate `SameSite` cookie settings.
+- Never expose secrets or database credentials in frontend code.
+- Handle missing records and unauthorized requests safely.
+- Display useful error messages without exposing internal stack traces.
+- Avoid unsafe template rendering of user-provided content.
+
+For local development, use a development secret key only when no environment variable is configured. Document that a strong secret must be supplied for deployment.
+
+Do not claim the project is production-ready merely because it includes these protections.
+
+## 7. Recommended Project Structure
+
+Create the following structure:
 
 ```text
 airline-reservation-system/
 │
-├── app.py                  # Main Flask application, routes, DB initialization, auth
-├── requirements.txt        # Python package dependencies (Flask)
-├── database.db             # SQLite database (auto-generated on first run)
-├── README.md               # Complete project documentation & viva guide
+├── app.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+├── .env.example
 │
-├── templates/              # Jinja2 HTML Templates
-│   ├── base.html           # Common layout: Navbar, footer, flash alerts
-│   ├── index.html          # Homepage: Banner, search widget, popular routes
-│   ├── login.html          # User & Admin login with 1-click demo autofill
-│   ├── register.html       # User registration form with validation
-│   ├── flights.html        # Flight search results & filters
-│   ├── booking.html        # Passenger details & interactive seat map
-│   ├── my_bookings.html    # User bookings list & cancellation modal
-│   ├── ticket.html         # Printable Boarding Pass / E-Ticket with barcode
-│   └── admin.html          # Admin dashboard: statistics, flights & user tables
+├── database/
+│   └── .gitkeep
 │
-└── static/                 # Static Assets
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── login.html
+│   ├── register.html
+│   ├── flights.html
+│   ├── booking.html
+│   ├── my_bookings.html
+│   ├── ticket.html
+│   ├── admin.html
+│   ├── 403.html
+│   ├── 404.html
+│   └── 500.html
+│
+└── static/
     ├── css/
-    │   └── style.css       # Blue & white theme, seat map & boarding pass styling
-    └── js/
-        └── script.js       # Seat selection logic, validation & alert auto-dismiss
+    │   └── style.css
+    ├── js/
+    │   └── script.js
+    └── img/
 ```
 
----
+The SQLite database should be generated automatically on first run. Do not require the user to create the database manually.
 
-## 🗄️ 4. Database Schema
+You may organize the Flask application into additional modules if this improves maintainability, but keep the setup beginner-friendly.
 
-The system uses three relational SQLite tables:
+## 8. Sample Data and Demo Accounts
 
-### 1. `users` Table
-Stores customer and administrator credentials.
-- `id` (INTEGER, Primary Key, Auto Increment)
-- `name` (TEXT, Not Null)
-- `email` (TEXT, Unique, Not Null)
-- `password_hash` (TEXT, Not Null)
-- `phone` (TEXT)
-- `role` (TEXT, Default `'user'`) — either `'user'` or `'admin'`
-- `created_at` (TIMESTAMP)
+On the first run, initialize the database with realistic sample domestic flights and demo accounts.
 
-### 2. `flights` Table
-Stores scheduled domestic flight information.
-- `id` (INTEGER, Primary Key, Auto Increment)
-- `flight_number` (TEXT, Unique, Not Null) — e.g. `SB-101`
-- `airline` (TEXT, Not Null) — e.g. `SkyBook Express`, `Air India`, `IndiGo`
-- `source` (TEXT, Not Null) — e.g. `Ahmedabad`, `Mumbai`, `Delhi`
-- `destination` (TEXT, Not Null)
-- `departure_time` (TEXT, Not Null) — e.g. `06:30 AM`
-- `arrival_time` (TEXT, Not Null) — e.g. `07:45 AM`
-- `flight_date` (TEXT, Not Null) — `YYYY-MM-DD`
-- `duration` (TEXT, Not Null) — e.g. `1h 15m`
-- `total_seats` (INTEGER, Default `60`)
-- `available_seats` (INTEGER, Default `60`)
-- `price` (REAL, Not Null)
+Create these accounts if they do not already exist:
 
-### 3. `bookings` Table
-Tracks ticket purchases and passenger details.
-- `id` (INTEGER, Primary Key, Auto Increment)
-- `booking_reference` (TEXT, Unique, Not Null) — Unique 6-character PNR code
-- `user_id` (INTEGER, Foreign Key &rarr; `users.id`)
-- `flight_id` (INTEGER, Foreign Key &rarr; `flights.id`)
-- `passenger_name` (TEXT, Not Null)
-- `passenger_age` (INTEGER, Not Null)
-- `passenger_gender` (TEXT, Not Null)
-- `contact_number` (TEXT, Not Null)
-- `seat_number` (TEXT, Not Null) — e.g. `3A`, `4C`
-- `booking_date` (TIMESTAMP)
-- `status` (TEXT, Default `'Confirmed'`) — `'Confirmed'` or `'Cancelled'`
-- `total_fare` (REAL, Not Null)
+**Administrator**
 
----
+- Email: `admin@skybook.com`
+- Password: `admin123`
+- Role: `admin`
 
-## 🚀 5. Installation and Setup Instructions
+**Demo Customer**
 
-### Prerequisites
-- Python 3.8 or higher installed on your computer.
+- Email: `rahul@gmail.com`
+- Password: `user123`
+- Role: `user`
 
-### Step 1: Open the Project in VS Code or Terminal
-Open VS Code, select **File &rarr; Open Folder**, and open `airline-reservation-system`.
+Hash both passwords before storing them.
 
-Or navigate to the folder using your terminal:
+Make initialization idempotent so that restarting the application does not duplicate sample flights or users.
+
+If demo bookings are included, ensure that their seats and availability are consistent.
+
+These are demonstration credentials only and must be clearly identified as unsuitable for production.
+
+## 9. Installation and Execution
+
+Create a complete `requirements.txt` containing every required external Python dependency, including Flask and any libraries used for CSRF protection or environment-variable loading.
+
+The project must run using these commands:
+
 ```bash
 cd airline-reservation-system
+
+python -m venv venv
 ```
 
-### Step 2: Install Flask
-Install the required packages using pip:
+Activate the environment.
+
+Windows Command Prompt:
+
+```bash
+venv\Scripts\activate
+```
+
+Windows PowerShell:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+macOS/Linux:
+
+```bash
+source venv/bin/activate
+```
+
+Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
-*(Or simply: `pip install flask`)*
 
-### Step 3: Run the Application
-Start the Flask development server:
+Start the application:
+
 ```bash
 python app.py
 ```
 
-### Step 4: Access in Your Browser
-Open your browser and navigate to:
-```text
-http://127.0.0.1:5000
-```
+Open:
 
-> **Note:** The database (`database.db`) is automatically created and populated with sample Indian flights, demo users, and bookings upon the first launch!
+`http://127.0.0.1:5000`
 
----
+Document common installation errors and their solutions in `README.md`.
 
-## 🔑 6. Demo Login Credentials
+Use Flask's development server only for local development.
 
-For quick demonstrations during college presentations and lab evaluations, use these pre-seeded accounts:
+## 10. Software Engineering Documentation
 
-| Role | Email Address | Password | Privileges |
-|---|---|---|---|
-| **Administrator** | `admin@skybook.com` | `admin123` | Full access to Admin Dashboard, add/edit/delete flights, cancel any booking, view statistics |
-| **Demo Customer** | `rahul@gmail.com` | `user123` | Search flights, pick seats, book tickets, view e-tickets, cancel personal bookings |
+Create a complete `README.md` covering:
 
-*(On the Login page, you can also click the **"User Demo"** or **"Admin Demo"** quick-fill buttons to automatically insert the credentials!)*
+1. Project introduction
+2. Objectives and scope
+3. Technology stack
+4. System architecture
+5. Project directory structure
+6. Database schema
+7. Installation instructions
+8. Demo credentials
+9. Application features
+10. Functional requirements
+11. Nonfunctional requirements
+12. Security measures
+13. Test cases and expected results
+14. Known limitations
+15. Future enhancements
+16. Software Engineering viva questions and answers
 
----
+Include a concise explanation of the Model-Template-View architecture used by Flask, database relationships, session management, password hashing, SQL injection prevention, and transaction-safe seat booking.
 
-## 🎯 7. Step-by-Step Testing & Demonstration Workflow
+Do not claim that tests have passed unless they have actually been executed.
 
-When demonstrating this project for your Software Engineering mini-project viva, follow these steps:
+## 11. Required Functional Testing
 
-1. **Homepage (`/`)**:
-   - Show the airplane banner and search form.
-   - Select Origin: **Ahmedabad** and Destination: **Mumbai**.
-   - Click **Find Flights**.
+Verify the following workflows before considering the project complete:
 
-2. **Flight Search (`/flights`)**:
-   - Point out the flight cards displaying airline, timing, route line, available seat counter, and price.
-   - Show the sorting options (Price Low-to-High / High-to-Low).
-   - Click **Select Seat & Book**.
+1. Homepage loads successfully.
+2. Registration creates a user with a hashed password.
+3. Duplicate email registration is rejected.
+4. Valid login succeeds and invalid login fails.
+5. Customers cannot access the admin dashboard.
+6. Administrators can access the admin dashboard.
+7. Flight search returns matching flights.
+8. Invalid or identical origin and destination values are rejected.
+9. Available seats can be selected.
+10. Confirmed booked seats cannot be reserved again.
+11. A successful booking generates a unique PNR.
+12. The ticket displays the correct passenger, flight, seat, and fare.
+13. Customers cannot access another customer's bookings.
+14. Cancellation changes the status and releases the seat exactly once.
+15. Cancelled bookings remain in the database.
+16. Administrators can add and edit flights.
+17. Flights with confirmed bookings cannot be deleted.
+18. Invalid form submissions are handled safely.
+19. Database transactions prevent duplicate seat reservations under concurrent requests.
+20. All major pages work on desktop and mobile.
 
-3. **User Authentication (`/login` or `/register`)**:
-   - If not signed in, you are redirected to login.
-   - Log in using `rahul@gmail.com` / `user123` (or register a brand new account).
+Write automated tests for the critical authentication, authorization, booking, seat-uniqueness, and cancellation workflows where practical.
 
-4. **Interactive Seat Selection & Booking (`/book/<id>`)**:
-   - Demonstrate the Airbus A320 cabin visualizer.
-   - Click on an available seat (e.g. `2B`).
-   - Notice how already occupied seats are disabled and strike-through.
-   - Enter passenger details (Name, Age, Gender, Mobile).
-   - Click **Confirm & Book Ticket**.
+## 12. Suggested Software Engineering Viva Questions
 
-5. **My Bookings (`/my-bookings`)**:
-   - Show the newly generated PNR reference code (e.g., `SB-83921`).
-   - Click **E-Ticket** to open the realistic Boarding Pass.
-   - Click **Print / Save as PDF** to show print-ready layout.
+Include clear, beginner-friendly answers to questions such as:
 
-6. **Booking Cancellation (`/cancel-booking/<id>`)**:
-   - Click **Cancel** on a confirmed ticket.
-   - Show that the status updates to `Cancelled`.
-   - Verify that the seat is returned to the available seat pool.
+- What is an Airline Reservation System?
+- What problem does this project solve?
+- Why was Flask selected?
+- Why is SQLite suitable for this mini-project?
+- What is the MVC or Model-Template-View pattern?
+- What is the purpose of Jinja2?
+- How does session-based authentication work?
+- What is password hashing?
+- How does the system prevent SQL injection?
+- How is double-booking prevented?
+- Why are database transactions important?
+- What is a primary key?
+- What is a foreign key?
+- What is referential integrity?
+- Why is booking cancellation recorded instead of deleting the booking?
+- What are functional and nonfunctional requirements?
+- What testing techniques are used?
+- What are the limitations of this project?
+- How could the application be extended in the future?
 
-7. **Admin Dashboard (`/admin`)**:
-   - Log in as `admin@skybook.com` / `admin123`.
-   - Show the high-level statistics cards (Total Flights, Confirmed Bookings, Users, Revenue).
-   - Add a new flight using the **Schedule New Flight** modal.
-   - Edit flight fare or timings.
-   - Attempt to delete a flight: note that flights with active confirmed bookings cannot be deleted (referential integrity rule).
+Answers must be consistent with the actual implementation.
 
----
+## 13. Final Implementation Instructions
 
-## 🎓 8. Software Engineering Viva Questions & Answers
+Follow this execution order:
 
-**Q1: What software development model does this project follow?**  
-> *Answer:* It follows an Agile iterative approach and MVC (Model-Template-View in Flask) architectural design, cleanly separating data (SQLite), presentation (Jinja2 HTML templates), and business logic (Flask routes).
+1. Create the complete project directory and all required files.
+2. Implement the database schema and initialization logic.
+3. Implement authentication, authorization, and session management.
+4. Implement flight search and administration.
+5. Implement seat selection and transaction-safe booking.
+6. Implement booking history, ticket generation, and cancellation.
+7. Build all HTML templates and responsive styling.
+8. Add JavaScript for interactive behavior and client-side validation.
+9. Add security protections and error handling.
+10. Create documentation and test cases.
+11. Run the application and execute the available tests.
+12. Fix errors found during testing.
 
-**Q2: How does the system prevent double-booking of seats?**  
-> *Answer:* When a user selects a seat and submits the booking form, the backend executes an atomic SQL query:
-> `SELECT id FROM bookings WHERE flight_id = ? AND seat_number = ? AND status = 'Confirmed'`
-> If a record exists, the reservation is rejected with an error message. Only if no confirmed booking is found is the insert completed and the available seats count decremented.
+### Non-negotiable requirements
 
-**Q3: How are passwords stored securely?**  
-> *Answer:* Passwords are never stored in plain text. They are hashed using Werkzeug's `generate_password_hash()` which implements PBKDF2 with SHA-256 and cryptographic salts. Verification is done via `check_password_hash()`.
+- Generate actual working source files, not just code snippets or a written plan.
+- Do not leave core functionality as TODO comments or placeholder buttons.
+- Do not fabricate successful test results.
+- Do not implement seat availability solely in JavaScript.
+- Do not allow users to bypass server-side authorization.
+- Do not store plaintext passwords.
+- Do not silently lose booking records during cancellation.
+- Do not create duplicate demo accounts or flights on repeated startup.
+- Keep the project easy for a college student to understand, demonstrate, and explain during a viva.
 
-**Q4: How is SQL Injection prevented?**  
-> *Answer:* All database queries use parameterized placeholders (`?`), ensuring user inputs are treated as literal values rather than executable SQL code.
+**Final deliverable:** A complete, runnable SkyBook Airlines web application with source code, database initialization, sample data, demo accounts, responsive interface, functional booking workflows, administrator dashboard, documentation, and working tests.
 
-**Q5: What happens when a user cancels a booking?**  
-> *Answer:* The booking's status is updated to `'Cancelled'` to maintain audit history, and the flight's `available_seats` counter is incremented by 1, making the seat immediately available for other travelers.
-#   A i r l i n e - r e s e r v a t i o n - s y s t e m  
- 
+When implementation is complete, provide a concise summary of the files created, installation commands, demo credentials, features implemented, and tests actually executed.
