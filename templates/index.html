@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}SkyBook Airlines - Book Domestic Flights in India{% endblock %}
+
+{% block content %}
+<!-- HERO BANNER SECTION -->
+<section class="hero-section text-center text-md-start">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-7">
+                <span class="badge bg-light text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
+                    <i class="bi bi-patch-check-fill me-1"></i> Official College Project Demo
+                </span>
+                <h1 class="hero-title text-white">
+                    Fly Higher, Travel Smarter with <span class="text-info">SkyBook</span>
+                </h1>
+                <p class="hero-subtitle text-light">
+                    Book flights across Ahmedabad, Mumbai, Delhi, Bengaluru, Chennai and more with instant seat selection, real-time availability, and digital e-tickets.
+                </p>
+                <div class="d-flex flex-wrap gap-3 mt-4 justify-content-center justify-content-md-start">
+                    <a href="{{ url_for('flights') }}" class="btn btn-primary btn-lg px-4 shadow">
+                        <i class="bi bi-search me-2"></i> Explore Flights
+                    </a>
+                    {% if not session.get('user_id') %}
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-person-plus me-2"></i> Create Account
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('my_bookings') }}" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-ticket-perforated me-2"></i> View My Bookings
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-5 text-center d-none d-lg-block">
+                <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-25 shadow-lg backdrop-blur">
+                    <i class="bi bi-airplane text-white" style="font-size: 7rem; transform: rotate(-15deg); display: inline-block;"></i>
+                    <h4 class="text-white mt-3 fw-bold">Connecting Indian Cities</h4>
+                    <p class="text-white text-opacity-75 small mb-0">Affordable airfares, hassle-free booking & instant PNR generation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FLIGHT SEARCH BOX -->
+<div class="container">
+    <div class="search-card">
+        <h5 class="fw-bold text-navy mb-3">
+            <i class="bi bi-geo-alt-fill text-primary me-2"></i> Search Domestic Flights
+        </h5>
+        <form action="{{ url_for('flights') }}" method="GET" class="flight-search-form">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-secondary">
+                        <i class="bi bi-geo-alt text-primary me-1"></i> From (Source)
+                    </label>
+                    <select name="source" class="form-select form-select-lg" required>
+                        <option value="" disabled selected>Select Origin City</option>
+                        {% for city in cities %}
+                            <option value="{{ city }}">{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-secondary">
+                        <i class="bi bi-geo-fill text-danger me-1"></i> To (Destination)
+                    </label>
+                    <select name="destination" class="form-select form-select-lg" required>
+                        <option value="" disabled selected>Select Destination City</option>
+                        {% for city in cities %}
+                            <option value="{{ city }}">{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-secondary">
+                        <i class="bi bi-calendar-event text-primary me-1"></i> Departure Date
+                    </label>
+                    <input type="date" name="date" class="form-control form-select-lg" value="{{ today }}" min="{{ today }}">
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+                        <i class="bi bi-search me-1"></i> Find Flights
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- FEATURED UPCOMING FLIGHTS -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">Featured Flights</h3>
+                <p class="text-muted small mb-0">Popular upcoming domestic routes available for instant booking</p>
+            </div>
+            <a href="{{ url_for('flights') }}" class="btn btn-sm btn-outline-primary">
+                View All Flights <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for flight in featured_flights %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 card-custom border-0 shadow-sm">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">
+                                    {{ flight.flight_number }}
+                                </span>
+                                <span class="badge bg-success bg-opacity-10 text-success fw-semibold">
+                                    {{ flight.available_seats }} Seats Left
+                                </span>
+                            </div>
+
+                            <h6 class="text-secondary small mb-1">{{ flight.airline }}</h6>
+                            <div class="d-flex justify-content-between align-items-center my-2">
+                                <div>
+                                    <div class="fw-bold fs-5">{{ flight.source }}</div>
+                                    <small class="text-muted">{{ flight.departure_time }}</small>
+                                </div>
+                                <div class="text-center px-2">
+                                    <i class="bi bi-airplane text-primary"></i>
+                                    <div class="text-muted small" style="font-size: 0.75rem;">{{ flight.duration }}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold fs-5">{{ flight.destination }}</div>
+                                    <small class="text-muted">{{ flight.arrival_time }}</small>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted d-block">Starting from</small>
+                                    <span class="fs-5 fw-bold text-navy">₹{{ "%.0f"|format(flight.price) }}</span>
+                                </div>
+                                <a href="{{ url_for('book_flight', flight_id=flight.id) }}" class="btn btn-sm btn-primary">
+                                    Book Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- POPULAR ROUTES SHOWCASE -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-primary fw-semibold small text-uppercase tracking-wider">Top Indian Destinations</span>
+            <h3 class="fw-bold mt-1">Popular Flight Routes</h3>
+            <p class="text-muted">Direct daily flights between prime economic and tourist hubs</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 border card-custom h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="stat-icon stat-icon-blue">
+                            <i class="bi bi-airplane"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Ahmedabad &harr; Mumbai</h5>
+                            <small class="text-muted">Shortest business route • ~1h 15m</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small">Daily frequent connections starting from ₹3,100 per passenger.</p>
+                    <a href="{{ url_for('flights', source='Ahmedabad', destination='Mumbai') }}" class="btn btn-outline-primary btn-sm w-100">
+                        Check Flights
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 border card-custom h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="stat-icon stat-icon-green">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Mumbai &harr; Delhi</h5>
+                            <small class="text-muted">India's busiest corridor • ~2h 15m</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small">Frequent flights with full meal and baggage options from ₹4,800.</p>
+                    <a href="{{ url_for('flights', source='Mumbai', destination='Delhi') }}" class="btn btn-outline-primary btn-sm w-100">
+                        Check Flights
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 border card-custom h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="stat-icon stat-icon-purple">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Delhi &harr; Bengaluru</h5>
+                            <small class="text-muted">Tech Capital Express • ~2h 45m</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small">Non-stop services connecting North and South tech hubs from ₹5,900.</p>
+                    <a href="{{ url_for('flights', source='Delhi', destination='Bengaluru') }}" class="btn btn-outline-primary btn-sm w-100">
+                        Check Flights
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY CHOOSE SKYBOOK SECTION -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-primary fw-semibold small text-uppercase">System Capabilities</span>
+            <h3 class="fw-bold mt-1">Key Software Engineering Features</h3>
+            <p class="text-muted">Designed following Software Engineering principles: modularity, validation, and consistency</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="text-center p-3">
+                    <div class="stat-icon stat-icon-blue mx-auto mb-3">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </div>
+                    <h5 class="fw-bold">Interactive Seat Map</h5>
+                    <p class="text-muted small">Choose your preferred window or aisle seat visually before confirming your booking.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="text-center p-3">
+                    <div class="stat-icon stat-icon-green mx-auto mb-3">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5 class="fw-bold">No Double Booking</h5>
+                    <p class="text-muted small">Atomic seat reservation logic guarantees that a booked seat cannot be chosen twice.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="text-center p-3">
+                    <div class="stat-icon stat-icon-purple mx-auto mb-3">
+                        <i class="bi bi-ticket-detailed"></i>
+                    </div>
+                    <h5 class="fw-bold">Instant E-Ticket</h5>
+                    <p class="text-muted small">Generates a unique PNR reference and a clean boarding pass ready to print or save.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="text-center p-3">
+                    <div class="stat-icon stat-icon-amber mx-auto mb-3">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <h5 class="fw-bold">Admin Management</h5>
+                    <p class="text-muted small">Dedicated admin panel to add, edit, or delete flights and view system-wide analytics.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

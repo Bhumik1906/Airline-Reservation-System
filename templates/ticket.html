@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}E-Ticket / Boarding Pass - {{ booking.booking_reference }} | SkyBook Airlines{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Top action buttons (hidden in print) -->
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <a href="{{ url_for('my_bookings') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to My Bookings
+        </a>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-primary btn-sm">
+                <i class="bi bi-printer-fill me-1"></i> Print / Save as PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- E-TICKET / BOARDING PASS CARD -->
+    <div class="ticket-wrapper">
+        <div class="ticket-card">
+            <!-- Ticket Header -->
+            <div class="ticket-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-airplane-engines-fill fs-3"></i>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-white">SkyBook Airlines</h4>
+                        <span class="small text-white-50">Official Electronic Boarding Pass</span>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <span class="small text-white-50 d-block">PNR NUMBER</span>
+                    <h4 class="fw-bold text-white mb-0">{{ booking.booking_reference }}</h4>
+                </div>
+            </div>
+
+            <!-- Ticket Body -->
+            <div class="row g-0">
+                <!-- Main Flight Details (Left 8 cols) -->
+                <div class="col-md-8 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <div>
+                            <span class="text-secondary small">Airline / Carrier</span>
+                            <h5 class="fw-bold mb-0 text-dark">{{ booking.airline }}</h5>
+                        </div>
+                        <div>
+                            <span class="text-secondary small">Flight Number</span>
+                            <h5 class="fw-bold mb-0 text-primary">{{ booking.flight_number }}</h5>
+                        </div>
+                        <div>
+                            <span class="text-secondary small">Travel Date</span>
+                            <h5 class="fw-bold mb-0 text-dark">{{ booking.flight_date }}</h5>
+                        </div>
+                        <div>
+                            <span class="text-secondary small">Status</span>
+                            <div>
+                                {% if booking.status == 'Confirmed' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Route Section -->
+                    <div class="row align-items-center mb-4">
+                        <div class="col-5">
+                            <span class="text-muted small">Origin</span>
+                            <h3 class="fw-bold text-navy mb-0">{{ booking.source }}</h3>
+                            <div class="text-primary fw-semibold">{{ booking.departure_time }}</div>
+                        </div>
+                        <div class="col-2 text-center">
+                            <i class="bi bi-airplane text-secondary fs-4"></i>
+                            <div class="small text-muted">{{ booking.duration }}</div>
+                        </div>
+                        <div class="col-5 text-end">
+                            <span class="text-muted small">Destination</span>
+                            <h3 class="fw-bold text-navy mb-0">{{ booking.destination }}</h3>
+                            <div class="text-primary fw-semibold">{{ booking.arrival_time }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Passenger Details Row -->
+                    <div class="row g-3 pt-3 border-top">
+                        <div class="col-6">
+                            <span class="text-muted small d-block">Passenger Name</span>
+                            <strong class="text-dark">{{ booking.passenger_name }}</strong>
+                        </div>
+                        <div class="col-3">
+                            <span class="text-muted small d-block">Gender / Age</span>
+                            <strong class="text-dark">{{ booking.passenger_gender }} / {{ booking.passenger_age }}</strong>
+                        </div>
+                        <div class="col-3">
+                            <span class="text-muted small d-block">Contact</span>
+                            <strong class="text-dark">{{ booking.contact_number }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Barcode strip -->
+                    <div class="mt-4">
+                        <div class="barcode-strip"></div>
+                        <div class="text-center small text-muted font-monospace mt-1">
+                            *{{ booking.booking_reference }}*{{ booking.flight_number }}*{{ booking.seat_number }}*
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ticket Stub (Right 4 cols) -->
+                <div class="col-md-4 p-4 ticket-stub d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary">BOARDING PASS</span>
+                            <span class="fw-bold text-secondary">{{ booking.flight_number }}</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="text-muted small d-block">Passenger</span>
+                            <strong class="text-dark">{{ booking.passenger_name }}</strong>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="text-muted small d-block">Route</span>
+                            <strong class="text-dark">{{ booking.source }} &rarr; {{ booking.destination }}</strong>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <span class="text-muted small d-block">Seat</span>
+                                <span class="fs-3 fw-bold text-primary">{{ booking.seat_number }}</span>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted small d-block">Class</span>
+                                <span class="fs-4 fw-bold text-dark">Economy</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2 bg-white rounded border mb-3">
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Boarding Gate:</span>
+                                <strong class="text-dark">Gate 3B</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mt-1">
+                                <span>Total Paid:</span>
+                                <strong class="text-primary">₹{{ "%.2f"|format(booking.total_fare) }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="small text-muted border-top pt-2" style="font-size: 0.75rem;">
+                        Gate closes 25 mins prior to departure. Please carry valid government-issued photo ID.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

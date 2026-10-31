@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings - SkyBook Airlines{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">
+                <i class="bi bi-ticket-perforated-fill text-primary me-2"></i> My Flight Reservations
+            </h3>
+            <p class="text-muted small mb-0">View all your confirmed and cancelled tickets</p>
+        </div>
+        <a href="{{ url_for('flights') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> Book New Flight
+        </a>
+    </div>
+
+    {% if bookings %}
+        <div class="row g-3">
+            {% for b in bookings %}
+                <div class="col-12">
+                    <div class="card card-custom p-4 border-0 shadow-sm">
+                        <div class="row align-items-center g-3">
+                            <!-- PNR & Status -->
+                            <div class="col-lg-2 col-md-3">
+                                <span class="small text-muted d-block">PNR / Reference</span>
+                                <span class="fw-bold fs-5 text-primary">{{ b.booking_reference }}</span>
+                                <div class="mt-2">
+                                    {% if b.status == 'Confirmed' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Confirmed
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">
+                                            <i class="bi bi-x-circle-fill me-1"></i> Cancelled
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Flight Details -->
+                            <div class="col-lg-4 col-md-5">
+                                <div class="fw-bold text-dark fs-6">{{ b.airline }} ({{ b.flight_number }})</div>
+                                <div class="text-secondary small mb-1">
+                                    <i class="bi bi-calendar-event me-1"></i> Travel Date: <strong>{{ b.flight_date }}</strong>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-semibold">{{ b.source }}</span>
+                                    <span class="text-muted small">({{ b.departure_time }})</span>
+                                    <i class="bi bi-arrow-right text-primary"></i>
+                                    <span class="fw-semibold">{{ b.destination }}</span>
+                                    <span class="text-muted small">({{ b.arrival_time }})</span>
+                                </div>
+                            </div>
+
+                            <!-- Passenger & Seat -->
+                            <div class="col-lg-3 col-md-4">
+                                <div class="text-secondary small">Passenger:</div>
+                                <div class="fw-bold text-dark">{{ b.passenger_name }} ({{ b.passenger_gender }}, {{ b.passenger_age }} yrs)</div>
+                                <div class="text-secondary small mt-1">
+                                    Seat Number: <span class="badge bg-light text-navy border fw-bold px-2 py-1">{{ b.seat_number }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Total Fare & Action Buttons -->
+                            <div class="col-lg-3 col-md-12 text-lg-end">
+                                <div class="price-tag mb-2 fs-5">₹{{ "%.2f"|format(b.total_fare) }}</div>
+                                <div class="d-flex justify-content-lg-end gap-2 flex-wrap">
+                                    <!-- View Ticket / Boarding Pass -->
+                                    <a href="{{ url_for('view_ticket', booking_id=b.id) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-printer me-1"></i> E-Ticket
+                                    </a>
+
+                                    <!-- Cancel Booking Button (if Confirmed) -->
+                                    {% if b.status == 'Confirmed' %}
+                                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal{{ b.id }}">
+                                            <i class="bi bi-x-lg me-1"></i> Cancel
+                                        </button>
+
+                                        <!-- Cancel Confirmation Modal -->
+                                        <div class="modal fade text-start" id="cancelModal{{ b.id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ b.id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title fw-bold text-danger" id="cancelModalLabel{{ b.id }}">
+                                                            <i class="bi bi-exclamation-triangle-fill me-2"></i> Cancel Flight Booking
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to cancel your booking for PNR <strong>{{ b.booking_reference }}</strong>?</p>
+                                                        <ul class="text-muted small">
+                                                            <li>Flight: {{ b.flight_number }} ({{ b.source }} to {{ b.destination }})</li>
+                                                            <li>Date: {{ b.flight_date }} at {{ b.departure_time }}</li>
+                                                            <li>Seat {{ b.seat_number }} will be released for other passengers.</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Keep Booking</button>
+                                                        <form action="{{ url_for('cancel_booking', booking_id=b.id) }}" method="POST" class="d-inline">
+                                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                                Confirm Cancellation
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- EMPTY STATE -->
+        <div class="card card-custom p-5 text-center my-4 border-0">
+            <div class="stat-icon stat-icon-blue mx-auto mb-3" style="width: 72px; height: 72px; font-size: 2.2rem;">
+                <i class="bi bi-ticket-perforated"></i>
+            </div>
+            <h4 class="fw-bold">No Bookings Found</h4>
+            <p class="text-muted max-w-md mx-auto mb-4">
+                You haven't booked any flights with SkyBook Airlines yet. Search and book your journey now!
+            </p>
+            <div>
+                <a href="{{ url_for('flights') }}" class="btn btn-primary px-4">
+                    <i class="bi bi-search me-1"></i> Search Available Flights
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
